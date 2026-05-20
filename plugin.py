@@ -27,6 +27,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 ###
+import builtins
 import ipaddress
 import re
 import subprocess  # nosec B404
@@ -96,10 +97,10 @@ def _valid_hostname(host):
         return False
 
     labels = host.rstrip(".").split(".")
-    if any(not label or len(label) > 63 for label in labels):
+    if builtins.any(not label or len(label) > 63 for label in labels):
         return False
 
-    return all(HOSTNAME_LABEL_RE.match(label) for label in labels)
+    return builtins.all(HOSTNAME_LABEL_RE.match(label) for label in labels)
 
 
 def _valid_ping_target(host):
