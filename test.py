@@ -104,6 +104,12 @@ class MyPingSecurityTestCase(unittest.TestCase):
         self.assertEqual(len(result), plugin.MAX_REPLY_LENGTH)
         self.assertTrue(result.endswith("..."))
 
+    def test_reply_text_preserves_irc_colours(self):
+        result = plugin._limit_text(plugin.red("example.com"))
+
+        self.assertIn("\x03", result)
+        self.assertIn("example.com", result)
+
     def test_cooldown_is_per_user_and_prunes_expired_entries(self):
         resolver = plugin.MyPing.__new__(plugin.MyPing)
         resolver._cooldowns = {("net", "#test", "old!user@example"): 1.0}

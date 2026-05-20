@@ -59,7 +59,9 @@ from .local.colour import red, teal
 ###############
 
 special_chars = ("-", "[", "]", "\\", "`", "^", "{", "}", "_")
-CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
+UNSAFE_CONTROL_CHARS_RE = re.compile(
+    r"[\x00-\x01\x04-\x0e\x10-\x15\x17-\x1c\x1e\x7f]"
+)
 HOSTNAME_LABEL_RE = re.compile(
     r"^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$"
 )
@@ -86,7 +88,7 @@ def is_nick(nick):
 
 
 def _limit_text(value, max_length=MAX_REPLY_LENGTH):
-    text = CONTROL_CHARS_RE.sub("", str(value)).strip()
+    text = UNSAFE_CONTROL_CHARS_RE.sub("", str(value)).strip()
     if len(text) <= max_length:
         return text
     return f"{text[: max_length - 3]}..."
@@ -105,7 +107,7 @@ def _valid_hostname(host):
 
 def _valid_ping_target(host):
     raw = (host or "").strip()
-    target = CONTROL_CHARS_RE.sub("", raw).strip()
+    target = UNSAFE_CONTROL_CHARS_RE.sub("", raw).strip()
     if not target:
         return False, "", "Please provide a host, nick, IPv4, or IPv6 target."
 
